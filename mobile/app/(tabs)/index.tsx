@@ -3,17 +3,17 @@ import { Text, View } from '@/components/Themed';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function TabOneScreen() {
-    const uploadImage = async (uri: string) => {
-        const formData = new FormData();
-        formData.append('file', uri);
+    const uploadImage = async (file) => {
+
+        console.log("Uploading image:", file);
+
+        const fd = new FormData();
+        fd.append('file', file);
 
         try {
             const response = await fetch('http://localhost:7777/caption', {
                 method: 'POST',
-                body: formData,
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                body: fd,
             });
             const data = await response.json();
             console.log('Upload successful:', data);
@@ -30,9 +30,13 @@ export default function TabOneScreen() {
             quality: 1,
         });
 
+        console.log("Image picker result:", result);
+
         if (!result.canceled) {
             console.log("Uploading image");
-            await uploadImage(result.assets[0].uri);
+            const file = result.assets[0].file;
+            file.uri = result.assets[0].uri;
+            await uploadImage(file);
         }
     }
 
