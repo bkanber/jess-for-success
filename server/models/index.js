@@ -1,14 +1,13 @@
 import Sequelize from 'sequelize';
 // import model files as ESM modules
 import Closet, { init as initCloset } from './Closet.js';
-import Account, { init as initAccount } from './Closet.js';
+import Account, { init as initAccount } from './Account.js';
 import File, { init as initFile } from './File.js';
 import Token, { init as initToken } from './Token.js';
 import Hanger, { init as initHanger } from './Hanger.js';
 
 const env = process.env.NODE_ENV || 'development';
 let modelsCache = null;
-console.log("Loading models for environment:", env)
 
 function loadModels() {
     if (modelsCache) {
