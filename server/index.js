@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 7777;
 async function startServer() {
     try {
         // Sync database models
-        await Models.sequelize.sync();
+        await Models.sequelize.sync({alter: true});
         console.log('Database models synced successfully');
     } catch (err) {
         console.error('Error syncing database models:', err);

@@ -11,6 +11,15 @@ export function init(sequelize) {
             primaryKey: true,
             autoIncrement: true
         },
+        uuid: {
+            type: DataTypes.UUID,
+            defaultValue: Sequelize.UUIDV4,
+            allowNull: false,
+            unique: sequelize.getDialect() !== 'sqlite',
+            validate: {
+                isUUID: 4
+            }
+        },
         name: {
             type: DataTypes.STRING,
             allowNull: false
@@ -21,12 +30,13 @@ export function init(sequelize) {
         },
         imageId: {
             type: DataTypes.INTEGER,
-            allowNull: true
+            allowNull: true,
+            references: { model: 'Files', key: 'id', onDelete: 'SET NULL', onUpdate: 'CASCADE' }
         },
         accountId: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            references: { model: 'Accounts', key: 'id' }
+            references: { model: 'Accounts', key: 'id', onDelete: 'CASCADE', onUpdate: 'CASCADE' }
         },
         metadata: {
             type: DataTypes.JSON,

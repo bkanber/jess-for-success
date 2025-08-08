@@ -13,6 +13,39 @@ export const CLOTHING_TYPES = [
     'heels', 'flats', 'loafers', 'oxfords',
     'clogs', 'moccasins', 'espadrilles', 'wedges',
     'platform shoes', 'dress shoes', 'running shoes',
+    'button-up shirt', 'cargo jacket', 'windbreaker',
+    'parka', 'anorak', 'trench coat', 'raincoat',
+    'bomber jacket', 'denim jacket', 'leather jacket',
+];
+export const COLOR_NAMES = [
+    'red', 'green', 'blue', 'yellow', 'orange',
+    'purple', 'pink', 'brown', 'black', 'white',
+    'gray', 'silver', 'gold', 'beige', 'cyan',
+    'magenta', 'teal', 'navy', 'maroon', 'olive',
+    'turquoise', 'lavender', 'peach', 'coral', 'indigo',
+    'violet', 'lime', 'mint', 'chocolate', 'tan',
+    'cream', 'ivory', 'bronze', 'charcoal', 'burgundy',
+    'plum', 'fuchsia', 'apricot', 'amber', 'emerald',
+    'sapphire', 'ruby', 'topaz', 'pearl', 'onyx',
+    'jade', 'aquamarine', 'crimson', 'orchid',
+    'sepia', 'slate', 'taupe', 'blush', 'caramel',
+    'mustard', 'cobalt', 'cerulean', 'chartreuse', 'periwinkle',
+    'sienna', 'ash', 'smoke', 'chocolate', 'cinnamon',
+    'copper', 'platinum', 'brass', 'sage', 'fern',
+    'moss', 'spruce', 'pine', 'cedar', 'mahogany',
+    'walnut', 'ebony', 'maple', 'birch', 'oak',
+    'teak', 'bamboo', 'driftwood'
+];
+export const CLOTHING_PATTERNS = [
+    'solid', 'striped', 'plaid', 'checkered', 'polka dot',
+    'floral', 'paisley', 'geometric', 'animal print', 'camouflage',
+    'tie-dye', 'argyle', 'herringbone', 'houndstooth', 'chevron',
+    'gingham', 'batik', 'ikat', 'damask', 'brocade',
+    'embroidery', 'lace', 'sequin', 'glitter', 'metallic',
+    'ombre', 'gradient', 'color block', 'abstract', 'tropical',
+    'bohemian', 'tribal', 'vintage', 'retro', 'art deco',
+    'tartan', 'celtic', 'nautical', 'western', 'gothic',
+    'punk', 'grunge', 'steampunk', 'futuristic'
 ];
 
 /**
@@ -82,18 +115,32 @@ export async function getPipeline(name) {
 
 const TASKS = {
     'image': async (blob, opts={}) => {
+        const optTagLimit = opts.tagLimit || 100;
+        const optTagMinScore = opts.tagMinScore || 0.0;
+
         const classifier = await getPipeline('image-classification');
         const zeroShotClassifier = await getPipeline('zero-shot-image-classification');
         const captioner = await getPipeline('image-to-text');
 
         const caption = await captioner(blob);
         const classification = await classifier(blob);
-        const zeroShotClassification = await zeroShotClassifier(blob, CLOTHING_TYPES, {multi_label: true});
+        const zTypes = await zeroShotClassifier(blob, CLOTHING_TYPES, {multi_label: true});
+        const zColors = await zeroShotClassifier(blob, COLOR_NAMES, {multi_label: true});
+        const zPatterns = await zeroShotClassifier(blob, CLOTHING_PATTERNS, {multi_label: true});
+
+        const toTags = items => items
+                .filter(item => item.score >= optTagMinScore)
+                .sort((a, b) => b.score - a.score)
+                .slice(0, optTagLimit);
 
         return {
             caption: caption[0]?.generated_text || 'No caption generated',
             classification: classification || [],
-            zeroShotClassification: zeroShotClassification || []
+            tags: {
+                types: toTags(zTypes),
+                colors: toTags(zColors),
+                patterns: toTags(zPatterns),
+            }
         }
     }
 

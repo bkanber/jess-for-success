@@ -11,6 +11,12 @@ export function init(sequelize) {
             primaryKey: true,
             autoIncrement: true
         },
+        uuid: {
+            type: DataTypes.UUID,
+            defaultValue: Sequelize.UUIDV4,
+            allowNull: false,
+            unique: sequelize.getDialect() !== 'sqlite',
+        },
         accountId: {
             type: DataTypes.INTEGER,
             allowNull: true,
