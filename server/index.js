@@ -2,6 +2,7 @@ import express from 'express';
 import {pipeline} from '@huggingface/transformers';
 import multer from 'multer';
 import sharp from 'sharp';
+import Models from './models/index.js';
 
 const app = express();
 const PORT = process.env.PORT || 7777;
@@ -52,18 +53,10 @@ app.post('/caption', allowCors, upload.single("file"), async (req, res) => {
         }
 
         console.log(`Image dimensions: ${metadata.width}x${metadata.height}`);
-        const maxDim = 128;
+        const maxDim = 512;
         if (metadata.width > maxDim || metadata.height > maxDim) {
-            const aspect = metadata.width / metadata.height;
-            let width, height;
-            if (aspect > 1) {
-                width = maxDim;
-                height = Math.round(maxDim / aspect);
-            } else {
-                height = maxDim;
-                width = Math.round(maxDim * aspect);
-            }
-            img = img.resize(width, height);
+            img = img.resize(maxDim, maxDim, {fit: 'cover'});
+            const {width, height} = await img.metadata();
             console.log(`Resized image to: ${width}x${height}`);
         }
 
@@ -86,7 +79,17 @@ app.get('/', (req, res) => {
     res.send('Hello, world!');
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// Initialize database models before starting the server
+
+Models.sequelize.sync()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+    })
+    .catch(err => {
+        console.error('Unable to connect to the database:', err);
+        process.exit(1);
+    });
+
 
