@@ -33,7 +33,7 @@ describe("API Auth Routes", () => {
     });
 
     test("it should return 400 for missing login or password", async () => {
-        request(app)
+        await request(app)
             .post('/token')
             .send({})
             .expect('Content-Type', /json/)
