@@ -23,7 +23,7 @@ export const PIPELINE_MODELS = {
     },
     'chat': {
         pipeline: 'text-generation',
-        model: 'Xenova/llama2.c-stories15M',
+        model: 'onnx-community/gemma-3-1b-it-ONNX',
     }
 };
 
