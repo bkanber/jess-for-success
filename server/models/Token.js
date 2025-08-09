@@ -11,7 +11,15 @@ export function init(sequelize) {
             primaryKey: true,
             autoIncrement: true
         },
-        uuid: {
+        type: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'access',
+            validate: {
+                isIn: [['access', 'refresh', 'verification', 'password_reset']]
+            }
+        },
+        token: {
             type: DataTypes.UUID,
             defaultValue: Sequelize.UUIDV4,
             allowNull: false,
