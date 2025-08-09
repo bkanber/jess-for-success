@@ -4,6 +4,7 @@ import { Text, View } from '@/components/Themed';
 import { useRouter } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import FloatingActionButton from '@/components/FloatingActionButton';
 
 // Mocked Hanger data
 const defaultGroupBy = 'type'; // Change to 'tags' to group by tags
@@ -105,13 +106,7 @@ export default function ClosetScreen() {
                 )}
                 contentContainerStyle={styles.listContent}
             />
-            <TouchableOpacity
-                style={styles.fab}
-                onPress={() => router.push('/addhanger')}
-                activeOpacity={0.7}
-            >
-                <Ionicons name="add" size={32} color="#fff" />
-            </TouchableOpacity>
+            <FloatingActionButton onPress={() => router.push('/addhanger')} />
         </View>
     );
 }
@@ -190,22 +185,5 @@ const styles = StyleSheet.create({
     toggleButtonActive: {
         backgroundColor: '#333',
         color: '#fff',
-    },
-    fab: {
-        position: 'absolute',
-        right: 24,
-        bottom: 32,
-        backgroundColor: '#333',
-        borderRadius: 32,
-        width: 56,
-        height: 56,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOpacity: 0.2,
-        shadowRadius: 6,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 4,
-        zIndex: 100,
     },
 });
