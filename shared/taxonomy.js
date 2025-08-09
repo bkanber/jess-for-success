@@ -1,4 +1,4 @@
-export const CLOTHING_TYPES = [
+const CLOTHING_TYPES = [
     't-shirt', 'shirt', 'jeans', 'dress', 'skirt',
     'shorts', 'jacket', 'coat', 'sweater', 'hoodie',
     'sweatshirt', 'blouse', 'tank top', 'polo shirt',
@@ -16,7 +16,7 @@ export const CLOTHING_TYPES = [
     'parka', 'anorak', 'trench coat', 'raincoat',
     'bomber jacket', 'denim jacket', 'leather jacket',
 ];
-export const COLOR_NAMES = [
+const COLOR_NAMES = [
     'red', 'green', 'blue', 'yellow', 'orange',
     'purple', 'pink', 'brown', 'black', 'white',
     'gray', 'silver', 'gold', 'beige', 'cyan',
@@ -35,7 +35,7 @@ export const COLOR_NAMES = [
     'walnut', 'ebony', 'maple', 'birch', 'oak',
     'teak', 'bamboo', 'driftwood'
 ];
-export const CLOTHING_PATTERNS = [
+const CLOTHING_PATTERNS = [
     'solid', 'striped', 'plaid', 'checkered', 'polka dot',
     'floral', 'paisley', 'geometric', 'animal print', 'camouflage',
     'tie-dye', 'argyle', 'herringbone', 'houndstooth', 'chevron',
@@ -47,3 +47,10 @@ export const CLOTHING_PATTERNS = [
     'punk', 'grunge', 'steampunk', 'futuristic'
 ];
 
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        CLOTHING_TYPES,
+        COLOR_NAMES,
+        CLOTHING_PATTERNS
+    };
+}

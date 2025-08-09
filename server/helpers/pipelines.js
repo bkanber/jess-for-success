@@ -6,20 +6,24 @@ import {CLOTHING_TYPES, COLOR_NAMES, CLOTHING_PATTERNS} from '../../shared/taxon
  */
 export const PIPELINE_MODELS = {
     'image-classification': {
-        name: 'image-classification',
+        pipeline: 'image-classification',
         model: null,
     },
     'zero-shot-image-classification': {
-        name: 'zero-shot-image-classification',
+        pipeline: 'zero-shot-image-classification',
         model: null,
     },
     'image-tagger': {
-        name: 'zero-shot-image-classification',
+        pipeline: 'zero-shot-image-classification',
         model: null,
     },
     'image-to-text': {
-        name: 'image-to-text',
+        pipeline: 'image-to-text',
         model: 'Xenova/vit-gpt2-image-captioning',
+    },
+    'chat': {
+        pipeline: 'text-generation',
+        model: 'Xenova/llama2.c-stories15M',
     }
 };
 
