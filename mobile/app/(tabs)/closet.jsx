@@ -107,7 +107,7 @@ export default function ClosetScreen() {
             />
             <TouchableOpacity
                 style={styles.fab}
-                onPress={() => router.push('/modal')}
+                onPress={() => router.push('/addhanger')}
                 activeOpacity={0.7}
             >
                 <Ionicons name="add" size={32} color="#fff" />
