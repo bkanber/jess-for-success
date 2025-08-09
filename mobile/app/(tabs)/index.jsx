@@ -1,59 +1,133 @@
-import {Button, StyleSheet} from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { StyleSheet, TextInput, FlatList, KeyboardAvoidingView, Platform, TouchableOpacity, Keyboard } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import * as ImagePicker from 'expo-image-picker';
 
-export default function TabOneScreen() {
-    const uploadImage = async (file) => {
+const MOCK_MESSAGES = [
+    { id: '1', sender: 'jess', text: 'Hi! I’m Jess, your personal stylist. How can I help you today?' },
+    { id: '2', sender: 'user', text: 'Hi Jess! Can you suggest an outfit for a summer party?' },
+    { id: '3', sender: 'jess', text: 'Absolutely! Do you prefer something casual or a bit more formal?' },
+];
 
-        console.log("Uploading image:", file);
+export default function JessChatScreen() {
+    const [messages, setMessages] = useState(MOCK_MESSAGES);
+    const [input, setInput] = useState('');
+    const flatListRef = useRef(null);
 
-        const fd = new FormData();
-        fd.append('file', file);
-
-        try {
-            const response = await fetch('http://localhost:7777/caption', {
-                method: 'POST',
-                body: fd,
-            });
-            const data = await response.json();
-            console.log('Upload successful:', data);
-        } catch (error) {
-            console.error('Upload failed:', error);
+    useEffect(() => {
+        if (flatListRef.current && messages.length > 0) {
+            flatListRef.current.scrollToEnd({ animated: true });
         }
-    }
+    }, [messages]);
 
-    const handleImagePicker = async () => {
-        // No permissions request is necessary for launching the image library
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
-            allowsEditing: false,
-            quality: 1,
-        });
+    const handleSend = () => {
+        if (input.trim() === '') return;
+        setMessages(prev => [
+            ...prev,
+            { id: String(Date.now()), sender: 'user', text: input }
+        ]);
+        setInput('');
+        Keyboard.dismiss();
+    };
 
-        console.log("Image picker result:", result);
-
-        if (!result.canceled) {
-            console.log("Uploading image");
-            const file = result.assets[0].file;
-            file.uri = result.assets[0].uri;
-            await uploadImage(file);
-        }
-    }
+    const renderItem = ({ item }) => (
+        <View style={[styles.bubble, item.sender === 'jess' ? styles.jessBubble : styles.userBubble]}>
+            <Text style={item.sender === 'jess' ? styles.jessText : styles.userText}>{item.text}</Text>
+        </View>
+    );
 
     return (
-        <View style={styles.container}>
-            <Button
-                title="Pick an image from camera roll"
-                onPress={handleImagePicker}
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            keyboardVerticalOffset={80}
+        >
+            <FlatList
+                ref={flatListRef}
+                data={messages}
+                renderItem={renderItem}
+                keyExtractor={item => item.id}
+                contentContainerStyle={styles.chatContent}
             />
-        </View>
+            <View style={styles.inputRow}>
+                <TextInput
+                    style={styles.input}
+                    value={input}
+                    onChangeText={setInput}
+                    placeholder="Type your message..."
+                    placeholderTextColor="#aaa"
+                    onSubmitEditing={handleSend}
+                    returnKeyType="send"
+                />
+                <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+                    <Text style={styles.sendButtonText}>Send</Text>
+                </TouchableOpacity>
+            </View>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: 'transparent',
+    },
+    chatContent: {
+        padding: 16,
+        paddingBottom: 80,
+    },
+    bubble: {
+        maxWidth: '80%',
+        padding: 12,
+        borderRadius: 18,
+        marginBottom: 10,
+    },
+    jessBubble: {
+        alignSelf: 'flex-start',
+        backgroundColor: '#e6e6fa',
+        borderTopLeftRadius: 4,
+    },
+    userBubble: {
+        alignSelf: 'flex-end',
+        backgroundColor: '#333',
+        borderTopRightRadius: 4,
+    },
+    jessText: {
+        color: '#333',
+    },
+    userText: {
+        color: '#fff',
+    },
+    inputRow: {
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-    }
+        padding: 12,
+        borderTopWidth: 1,
+        borderColor: '#eee',
+        backgroundColor: '#fff',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+    },
+    input: {
+        flex: 1,
+        height: 40,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 20,
+        paddingHorizontal: 16,
+        marginRight: 8,
+        backgroundColor: '#f9f9f9',
+        color: '#333',
+    },
+    sendButton: {
+        backgroundColor: '#333',
+        borderRadius: 20,
+        paddingHorizontal: 18,
+        paddingVertical: 8,
+    },
+    sendButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
 });
