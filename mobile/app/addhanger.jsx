@@ -10,6 +10,10 @@ export default function HangerModalScreen() {
     const [name, setName] = useState('');
     const [type, setType] = useState('');
     const [tags, setTags] = useState('');
+    const [caption, setCaption] = useState('');
+    const [vibe, setVibe] = useState('');
+    const [color, setColor] = useState('');
+    const [pattern, setPattern] = useState('');
     const [uploading, setUploading] = useState(false);
     const [uploaded, setUploaded] = useState(false);
     const router = useRouter();
@@ -100,9 +104,33 @@ export default function HangerModalScreen() {
                     />
                     <TextInput
                         style={styles.input}
+                        placeholder="Caption"
+                        value={caption}
+                        onChangeText={setCaption}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Vibe"
+                        value={vibe}
+                        onChangeText={setVibe}
+                    />
+                    <TextInput
+                        style={styles.input}
                         placeholder="Type (e.g. t-shirt)"
                         value={type}
                         onChangeText={setType}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Color"
+                        value={color}
+                        onChangeText={setColor}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Pattern"
+                        value={pattern}
+                        onChangeText={setPattern}
                     />
                     <TextInput
                         style={styles.input}
