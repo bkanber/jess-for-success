@@ -14,10 +14,7 @@ router.post('/tag', upload.single('image'), async (req, res) => {
     }
     try {
         const tags = await fetchTags(req.file);
-        return res.json({
-            meta: {success: true},
-            data: tags
-        });
+        return res.json( tags );
     } catch (err) {
         console.error('Error fetching tags:', err);
         return res.status(500).json({error: 'Failed to fetch tags'});

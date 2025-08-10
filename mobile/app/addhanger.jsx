@@ -4,6 +4,7 @@ import { Platform, StyleSheet, Button, Image, TextInput, TouchableOpacity, Activ
 import * as ImagePicker from 'expo-image-picker';
 import { Text, View } from '@/components/Themed';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/components/useAuth';
 
 export default function HangerModalScreen() {
     const [image, setImage] = useState(null);
@@ -16,8 +17,35 @@ export default function HangerModalScreen() {
     const [pattern, setPattern] = useState('');
     const [uploading, setUploading] = useState(false);
     const [uploaded, setUploaded] = useState(false);
+    const [tagging, setTagging] = useState(false);
     const router = useRouter();
     const timeoutRef = useRef(null);
+    const { fetch: authFetch } = useAuth();
+
+    const handleImageSelected = async (file, uri) => {
+        setImage(uri);
+        setTagging(true);
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+            const res = await authFetch('http://localhost:7777/api/images/tag', {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setName(data.name || '');
+                setCaption(data.caption || '');
+                setVibe(data.vibe || '');
+                setType(data.type || '');
+                setColor(data.color || '');
+                setPattern(data.pattern || '');
+            }
+        } catch (err) {
+            // Optionally handle error
+        }
+        setTagging(false);
+    };
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -26,7 +54,7 @@ export default function HangerModalScreen() {
             quality: 1,
         });
         if (!result.canceled) {
-            setImage(result.assets[0].uri);
+            handleImageSelected(result.assets[0].file, result.assets[0].uri);
         }
     };
 
@@ -37,7 +65,7 @@ export default function HangerModalScreen() {
             quality: 1,
         });
         if (!result.canceled) {
-            setImage(result.assets[0].uri);
+            handleImageSelected(result.assets[0].file, result.assets[0].uri);
         }
     };
 
@@ -96,6 +124,12 @@ export default function HangerModalScreen() {
             ) : (
                 <View style={{width: '100%', alignItems: 'center'}}>
                     <Image source={{ uri: image }} style={styles.imagePreview} />
+                    {tagging && (
+                        <View style={{marginBottom: 12}}>
+                            <ActivityIndicator size="small" color="#333" />
+                            <Text style={{marginTop: 4}}>Auto-tagging...</Text>
+                        </View>
+                    )}
                     <TextInput
                         style={styles.input}
                         placeholder="Name"
