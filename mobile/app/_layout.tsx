@@ -4,6 +4,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { AuthProvider } from '@/components/useAuth.js';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
@@ -49,6 +50,7 @@ function RootLayoutNav() {
     const colorScheme = useColorScheme();
 
     return (
+        <AuthProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -62,5 +64,6 @@ function RootLayoutNav() {
                 />
             </Stack>
         </ThemeProvider>
+        </AuthProvider>
     );
 }
