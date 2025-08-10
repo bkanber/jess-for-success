@@ -1,9 +1,12 @@
+import {config} from 'dotenv';
+config({ path: ['.env', '.env.defaults'] });
 /**
  * Setup environment for jest tests
  */
 import Models from '../models/index.js';
 
 process.env.NODE_ENV = 'test';
+process.env.OPENAI_API_KEY = 'test';
 
 beforeAll(async () => {
     // Ensure database is synced for tests

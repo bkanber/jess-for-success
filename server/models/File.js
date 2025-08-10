@@ -95,6 +95,12 @@ export function init(sequelize) {
             type: DataTypes.STRING,
             allowNull: true
         },
+        // alias for data
+        buffer: {
+            type: DataTypes.VIRTUAL,
+            get() { return this.getDataValue('data'); },
+            set(value) { this.setDataValue('data', value); }
+        },
         data: {
             type: DataTypes.BLOB('long'),
             allowNull: true,
