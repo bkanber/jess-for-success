@@ -5,7 +5,7 @@ import sharp from 'sharp';
 describe("clampImage", () => {
     test("should throw error for invalid buffer", async () => {
         await expect(clampImage(null)).rejects.toThrow('Invalid buffer provided');
-        await expect(clampImage("not a buffer")).rejects.toThrow('Invalid buffer provided');
+        await expect(clampImage("not a buffer")).rejects.toThrow('Input file is missing: not a buffer');
     });
     test("should clamp large images", async () => {
         const input = sharp({

@@ -1,5 +1,5 @@
 import createTestApp from '../tests/createTestApp.js';
-import apiRoutes from './api-images.js';
+import apiRoutes from './api-closets.js';
 import request from 'supertest';
 
 describe("API Routes", () => {
