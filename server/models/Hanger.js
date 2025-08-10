@@ -54,8 +54,9 @@ export function init(sequelize) {
             references: { model: 'Files', key: 'id' }
         },
         aiNotes: {
-            type: DataTypes.TEXT,
-            allowNull: true
+            type: DataTypes.JSON,
+            allowNull: true,
+            defaultValue: {}
         },
         metadata: {
             type: DataTypes.JSON,

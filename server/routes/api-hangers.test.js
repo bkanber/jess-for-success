@@ -9,11 +9,11 @@ describe("API Routes", () => {
         app = createTestApp(apiRoutes);
     });
 
-    test("DELETE /:id should return 501 Not Implemented", async () => {
+    test("getting a nonexistent hanger returns 404", async () => {
         const response = await request(app)
-            .delete('/123')
-            .expect(501);
-        expect(response.body).toEqual({ error: 'Not implemented' });
+            .get('/api/hangers/999999')
+            .set('Content-Type', 'application/json')
+            .expect(404);
     });
 
 
