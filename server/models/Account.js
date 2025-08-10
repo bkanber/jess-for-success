@@ -26,6 +26,12 @@ export function init(sequelize) {
             primaryKey: true,
             autoIncrement: true
         },
+        uuid: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            allowNull: false,
+            unique: sequelize.getDialect() !== 'sqlite' // unique constraint for non-sqlite dialects
+        },
         login: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -45,6 +51,11 @@ export function init(sequelize) {
             validate: {
                 isEmail: true
             }
+        },
+        isEmailVerified: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         },
         name: {
             type: DataTypes.STRING,

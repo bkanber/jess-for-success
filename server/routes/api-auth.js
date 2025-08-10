@@ -1,6 +1,31 @@
 import express from 'express';
+import {createHash} from 'crypto';
 
 const router = express.Router();
+
+router.post('/register', async (req, res) => {
+    const {email, password} = req.body;
+    const cleanEmail = email.trim().toLowerCase();
+    const login = 'email:' + cleanEmail;
+    const loginHash = createHash('sha256').update(login).digest('hex');
+    const existingAccount = await req.app.locals.Models.Account.findOne({
+        where: {login: loginHash}
+    });
+    if (existingAccount) {
+        return res.status(400).json({error: 'Account already exists'});
+    }
+    const account = await req.app.locals.Models.Account.create({
+        login: loginHash,
+        email: cleanEmail,
+    });
+    await account.setPassword(password);
+    await account.save();
+    return res.status(201).json({
+        login: account.login,
+        uuid: account.uuid,
+        email: account.email
+    });
+});
 
 router.post('/token', async (req, res) => {
     const {login, password} = req.body;

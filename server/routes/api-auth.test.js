@@ -2,7 +2,7 @@ import createTestApp from '../tests/createTestApp.js';
 import apiAuthRoutes from './api-auth.js';
 import request from 'supertest';
 
-describe("API Auth Routes", () => {
+describe("API Auth token", () => {
     let app;
 
     beforeAll(() => {
@@ -74,4 +74,36 @@ describe("API Auth Routes", () => {
         await app.locals.Models.Account.destroy({ where: { id: acc.id } });
     });
 
+});
+
+describe("API Auth register", () => {
+    let app;
+
+    beforeAll(() => {
+        app = createTestApp(apiAuthRoutes);
+    });
+
+    test("it should register a new account", async () => {
+        const response = await request(app)
+            .post('/register')
+            .send({
+                email: 'TEST@test.com',
+                password: 'testpassword'
+            })
+            .expect('Content-Type', /json/)
+            .expect(201);
+        expect(response.body).toHaveProperty('login');
+        expect(response.body).toHaveProperty('uuid');
+        expect(response.body).toHaveProperty('email', 'test@test.com');
+        expect(response.body.login).toMatch(/^[a-f0-9]{64}$/); // SHA-256 hash format
+        expect(response.body.uuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format
+        // Cleanup
+        const account = await app.locals.Models.Account.findOne({
+            where: {email: 'test@test.com'}
+        });
+        if (account) {
+            await app.locals.Models.Token.destroy({where: {accountId: account.id}});
+            await app.locals.Models.Account.destroy({where: {id: account.id}});
+        }
+    });
 });
