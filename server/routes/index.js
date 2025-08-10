@@ -4,6 +4,7 @@ import sharp from "sharp";
 import multer from 'multer';
 import {getPipeline, runTask} from '../helpers/pipelines.js';
 import apiRouter from './api.js';
+import {fetchTags} from '../helpers/autoImageTagger.js';
 
 const upload = multer({storage: multer.memoryStorage()});
 const router = express.Router();
@@ -22,6 +23,20 @@ router.options('/*splat', allowCors);
 
 router.use('/api', apiRouter);
 
+router.post('/tagimage', allowCors, upload.single("file"), async (req, res) => {
+    const file = req.file;
+    const buffer = file ? file.buffer : null;
+
+    if (!buffer) {
+        return res.status(400).json({error: 'No file uploaded'});
+    }
+
+    console.log('Received file:', file ? file.originalname : 'No file');
+    console.log("Buffer size:", buffer.length);
+    const tags = await fetchTags(file);
+    console.log('Generated tags:', tags);
+    return res.json(tags);
+});
 router.post('/caption', allowCors, upload.single("file"), async (req, res) => {
     const file = req.file;
     const buffer = file ? file.buffer : null;

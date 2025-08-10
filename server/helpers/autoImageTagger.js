@@ -1,7 +1,19 @@
 import OpenAI from 'openai';
 import sharp from 'sharp';
 import {CLOTHING_TYPES, COLOR_NAMES, CLOTHING_PATTERNS} from '../../shared/taxonomy.js';
-const openai = new OpenAI();
+
+let client;
+
+export function getClient() {
+    if (!client) {
+        client = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+            project: process.env.OPENAI_PROJECT_ID,
+            organization: process.env.OPENAI_ORG_ID,
+        });
+    }
+    return client;
+}
 
 /**
  * List of tool functions for the auto image tagger.
@@ -56,8 +68,8 @@ export const TOOL_FUNCTIONS = [
     }
 ];
 
-export async function clampImage(buffer, maxDim = 1024) {
-    if (!buffer || !Buffer.isBuffer(buffer)) {
+export async function clampImage(buffer, maxDim = 768) {
+    if (!buffer) {
         throw new Error('Invalid buffer provided');
     }
     let image = sharp(buffer);
@@ -82,10 +94,10 @@ export async function makePayloadFromFile(file) {
     }
 
     const clampedBuffer = await clampImage(file.buffer);
-    const asDataUrl = `data:${file.mimetype};base64,${clampedBuffer.toString('base64')}`;
+    const asDataUrl = `data:${file.mimetype || file.type};base64,${clampedBuffer.toString('base64')}`;
 
     const payload = {
-        model: 'gpt-4.1-mini',
+        model: 'gpt-4.1-nano',
         input: [
             {
                 role: 'user',
@@ -103,14 +115,33 @@ export async function makePayloadFromFile(file) {
 }
 
 export async function fetchTags(file) {
+    const openai = getClient();
     const payload = await makePayloadFromFile(file);
-    const response = await openai.chat.completions.create(payload);
+    const response = await openai.responses.create(payload);
+    const outputs = response.output || [];
+    console.log(outputs);
+    const toolCalls = outputs.filter(output => output.type === 'function_call');
+    const taggingResponses = toolCalls.filter(call => call.name === 'tag_image');
+    console.log("Tagging responses:", taggingResponses);
 
-    if (response.choices && response.choices.length > 0) {
-        const toolCall = response.choices[0].message.tool_calls[0];
-        if (toolCall && toolCall.function && toolCall.function.name === 'tag_image') {
-            return toolCall.function.arguments;
+    if (taggingResponses.length > 0) {
+        const taggingResponse = taggingResponses[0];
+        const rawTags = taggingResponse.arguments || '{}';
+        const tags = JSON.parse(rawTags);
+
+        if (!tags || typeof tags !== 'object') {
+            throw new Error('Invalid tagging response format');
         }
+
+        return {
+            name: tags.name,
+            caption: tags.caption,
+            vibe: tags.vibe,
+            type: tags.type,
+            color: tags.color,
+            pattern: tags.pattern
+        };
     }
+
     throw new Error('No valid tagging response received');
 }
