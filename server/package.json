@@ -14,12 +14,15 @@
     "@huggingface/transformers": "^3.7.1",
     "@lancedb/lancedb": "^0.21.2",
     "argon2": "^0.43.1",
+    "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "mime-types": "^3.0.1",
     "multer": "^2.0.2",
+    "openai": "^5.12.2",
     "sequelize": "^6.37.7",
     "sharp": "^0.34.3",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "jest": "^30.0.5",

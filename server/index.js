@@ -1,10 +1,13 @@
+import { config } from 'dotenv';
+config({ path: ['.env', '.env.defaults'] }); // Load defaults first
+
 import express from 'express';
 import Models from './models/index.js';
 import routes from './routes/index.js';
 import {loadPipelineModels} from './helpers/pipelines.js';
 
 const app = express();
-const PORT = process.env.PORT || 7777;
+const PORT = process.env.PORT || 80;
 
 async function startServer() {
     try {
@@ -16,19 +19,10 @@ async function startServer() {
         process.exit(1); // Exit if models cannot be synced
     }
 
-    try {
-        // Load all pipeline models
-        await loadPipelineModels();
-        console.log('All pipeline models loaded successfully');
-    } catch (err) {
-        console.error('Error loading pipeline models:', err);
-        process.exit(2); // Exit if models cannot be loaded
-    }
-
     app.locals.Models = Models;
     app.use(routes);
     app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
+        console.log(`JessForSuccess Server is running on port ${PORT}`);
     });
 }
 
