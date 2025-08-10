@@ -21,7 +21,7 @@ const allowCors = (req, res, next) => {
 
 router.options('/*splat', allowCors);
 
-router.use('/api', apiRouter);
+router.use('/api', allowCors, apiRouter);
 
 router.post('/tagimage', allowCors, upload.single("file"), async (req, res) => {
     const file = req.file;

@@ -27,6 +27,16 @@ export function init(sequelize) {
                 onUpdate: 'CASCADE'
             }
         },
+        accountId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'Accounts',
+                key: 'id',
+                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE'
+            }
+        },
         name: {
             type: DataTypes.STRING,
         },

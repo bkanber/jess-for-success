@@ -7,7 +7,7 @@ import {useRouter, Link} from 'expo-router';
 
 export default function LoginScreen() {
     const {fetch, setToken} = useAuth();
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -20,11 +20,12 @@ export default function LoginScreen() {
             const res = await fetch('http://localhost:7777/api/auth/token', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({username, password}),
+                body: JSON.stringify({email, password}),
             });
             const data = await res.json();
             if (res.ok && data.token) {
                 await setToken(data.token);
+                router.push('/'); // Redirect to home after successful login
             } else {
                 setError(data.error || 'Login failed');
             }
@@ -39,10 +40,10 @@ export default function LoginScreen() {
             <Text style={{fontSize: 24, marginBottom: 24}}>Login</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Username"
+                placeholder="Email Address"
                 autoCapitalize="none"
-                value={username}
-                onChangeText={setUsername}
+                value={email}
+                onChangeText={setEmail}
             />
             <TextInput
                 style={styles.input}

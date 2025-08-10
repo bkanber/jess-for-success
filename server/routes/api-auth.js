@@ -28,13 +28,16 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/token', async (req, res) => {
-    const {login, password} = req.body;
-    if (!login || !password) {
+    const {email, password} = req.body;
+    if (!email || !password) {
         return res.status(400).json({error: 'Login and password are required'});
     }
+    const cleanEmail = email.trim().toLowerCase();
+    const login = 'email:' + cleanEmail;
+    const loginHash = createHash('sha256').update(login).digest('hex');
 
     const account = await req.app.locals.Models.Account.findOne({
-        where: {login} // Note: Password should be hashed in production
+        where: {login: loginHash}
     });
 
     if (!account) {

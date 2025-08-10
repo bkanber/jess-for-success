@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.delete('/:id', async (req, res) => {
     try {
-        const hanger = await Hanger.findOne({ where: { id: req.params.id, closetId: db.Sequelize.literal(`closetId IN (SELECT id FROM Closets WHERE accountId = ${req.account.id})`) } });
+        const hanger = await Hanger.findOne({ where: { id: req.params.id, accountId: req.account.id}});
         if (!hanger) return res.status(404).json({ error: 'Not found' });
         await hanger.destroy();
         return res.json({ success: true });
@@ -20,7 +20,7 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     try {
-        const hanger = await Hanger.findOne({ where: { id: req.params.id, closetId: db.Sequelize.literal(`closetId IN (SELECT id FROM Closets WHERE accountId = ${req.account.id})`) } });
+        const hanger = await Hanger.findOne({ where: { id: req.params.id, accountId: req.account.id } });
         if (!hanger) return res.status(404).json({ error: 'Not found' });
         await hanger.update(req.body);
         return res.json(hanger);
@@ -31,7 +31,7 @@ router.put('/:id', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     try {
-        const hanger = await Hanger.findOne({ where: { id: req.params.id, closetId: db.Sequelize.literal(`closetId IN (SELECT id FROM Closets WHERE accountId = ${req.account.id})`) } });
+        const hanger = await Hanger.findOne({ where: { id: req.params.id, accountId: req.account.id }});
         if (!hanger) return res.status(404).json({ error: 'Not found' });
         return res.json(hanger);
     } catch (err) {
@@ -52,6 +52,7 @@ router.post('/', upload.single('image'), async (req, res) => {
         }
         const hanger = await Hanger.create({
             closetId,
+            accountId: req.account.id,
             name,
             description,
             notes,
