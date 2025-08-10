@@ -20,6 +20,7 @@ async function startServer() {
     }
 
     app.locals.Models = Models;
+    app.use(express.json());
     app.use(routes);
     app.listen(PORT, () => {
         console.log(`JessForSuccess Server is running on port ${PORT}`);

@@ -62,6 +62,20 @@ function RootLayoutNav() {
                         presentation: 'modal'
                     }}
                 />
+                <Stack.Screen
+                    name="auth/login"
+                    options={{
+                        title: "Login",
+                        presentation: 'modal'
+                    }}
+                />
+                <Stack.Screen
+                    name="auth/register"
+                    options={{
+                        title: "Register",
+                        presentation: 'modal'
+                    }}
+                />
             </Stack>
         </ThemeProvider>
         </AuthProvider>
