@@ -28,7 +28,7 @@ export const TOOL_FUNCTIONS = [
             properties: {
                 name: {
                     type: "string",
-                    description: "A short descriptive name for the item, such as 'Red Striped Shirt' or 'Blue Floral Dress'.",
+                    description: "Short, uniquely descriptive name for the item.",
                 },
                 caption: {
                     type: "string",
@@ -107,6 +107,7 @@ export async function makePayloadFromFile(file) {
                 ]
             }
         ],
+        instructions: "You are an expert fashion assistant. Analyze the image and provide detailed tags and attributes for clothing or jewelry items.",
         tools: TOOL_FUNCTIONS,
         tool_choice: 'required',
     };

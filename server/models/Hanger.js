@@ -19,7 +19,7 @@ export function init(sequelize) {
         },
         closetId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: 'Closets',
                 key: 'id',

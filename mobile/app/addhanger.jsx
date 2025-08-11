@@ -7,7 +7,8 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/components/useAuth';
 
 export default function HangerModalScreen() {
-    const [image, setImage] = useState(null);
+    const [image, setImage] = useState(null); // the 'file' for upload
+    const [imageUri, setImageUri] = useState(null); // the local URI for display
     const [name, setName] = useState('');
     const [type, setType] = useState('');
     const [tags, setTags] = useState('');
@@ -23,7 +24,8 @@ export default function HangerModalScreen() {
     const { fetch: authFetch } = useAuth();
 
     const handleImageSelected = async (file, uri) => {
-        setImage(uri);
+        setImageUri(uri);
+        setImage(file);
         setTagging(true);
         try {
             const formData = new FormData();
@@ -71,10 +73,40 @@ export default function HangerModalScreen() {
 
     const handleUpload = async () => {
         setUploading(true);
-        setTimeout(() => {
+        try {
+            const formData = new FormData();
+            if (image) {
+                formData.append('image', image);
+            }
+            formData.append('name', name);
+            formData.append('caption', caption);
+            formData.append('vibe', vibe);
+            formData.append('type', type);
+            formData.append('color', color);
+            formData.append('pattern', pattern);
+            formData.append('tags', tags);
+            // You may want to pass closetId here if available
+            // formData.append('closetId', closetId);
+
+            const res = await authFetch('http://localhost:7777/api/hangers', {
+                method: 'POST',
+                body: formData,
+            });
+            if (res.ok) {
+                setUploading(false);
+                setUploaded(true);
+                // Redirect to closet page after a short delay
+                setTimeout(() => {
+                    router.push('/closet');
+                }, 1000);
+            } else {
+                // Optionally handle error
+                setUploading(false);
+            }
+        } catch (err) {
             setUploading(false);
-            setUploaded(true);
-        }, 1500); // Mock upload
+            // Optionally handle error
+        }
     };
 
     useEffect(() => {
@@ -123,7 +155,7 @@ export default function HangerModalScreen() {
                 </View>
             ) : (
                 <View style={{width: '100%', alignItems: 'center'}}>
-                    <Image source={{ uri: image }} style={styles.imagePreview} />
+                    <Image source={{ uri: imageUri }} style={styles.imagePreview} />
                     {tagging && (
                         <View style={{marginBottom: 12}}>
                             <ActivityIndicator size="small" color="#333" />

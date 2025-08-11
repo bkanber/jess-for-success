@@ -41,23 +41,19 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', upload.single('image'), async (req, res) => {
     try {
-        const { closetId, name, description, notes, tags } = req.body;
-        // Check closet ownership
-        const closet = await Closet.findOne({ where: { id: closetId, accountId: req.account.id } });
-        if (!closet) return res.status(403).json({ error: 'Forbidden' });
+        const { name, caption, vibe, type, color, pattern, closetId } = req.body;
         let frontImageId = null;
         if (req.file) {
             const file = await File.upload(req.file.buffer, { accountId: req.account.id });
             frontImageId = file.id;
         }
         const hanger = await Hanger.create({
-            closetId,
             accountId: req.account.id,
             name,
-            description,
-            notes,
-            tags,
-            frontImageId
+            description: caption,
+            frontImageId,
+            aiNotes: { name, caption, vibe, type, color, pattern },
+            closetId: closetId || null
         });
         return res.status(201).json(hanger);
     } catch (err) {
