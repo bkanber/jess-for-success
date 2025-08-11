@@ -4,7 +4,6 @@ config({ path: ['.env', '.env.defaults'] }); // Load defaults first
 import express from 'express';
 import Models from './models/index.js';
 import routes from './routes/index.js';
-import {loadPipelineModels} from './helpers/pipelines.js';
 
 const app = express();
 const PORT = process.env.PORT || 80;

@@ -1,14 +1,24 @@
 import express from 'express';
 import multer from 'multer';
 import {fetchTags} from '../helpers/autoImageTagger.js';
+import {runPipeline} from '../helpers/pipelines.js';
 import sharp from 'sharp';
 const upload = multer({storage: multer.memoryStorage()});
 
 const router = express.Router();
 
 router.post('/segment', upload.single('image'), async (req, res) => {
-    return res.status(501).json({error: 'Not implemented'});
+    if (!req.file || !req.file.buffer) {
+        return res.status(400).json({error: 'No image file uploaded'});
+    }
+    const blob = new Blob([req.file.buffer], {type: req.file.mimetype});
+    const segments = await runPipeline('image-segmentation', blob);
+    if (!segments) {
+        return res.status(500).json({error: 'Image segmentation failed'});
+    }
+    return res.json( segments );
 });
+
 router.post('/tag', upload.single('image'), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({error: 'No image file uploaded'});

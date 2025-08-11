@@ -5,6 +5,10 @@ import {CLOTHING_TYPES, COLOR_NAMES, CLOTHING_PATTERNS} from '../../shared/taxon
  * This helper wraps @huggingface/transformers pipeline models.
  */
 export const PIPELINE_MODELS = {
+    'image-segmentation': {
+        pipeline: 'image-segmentation',
+        model: null,
+    },
     'image-classification': {
         pipeline: 'image-classification',
         model: null,
