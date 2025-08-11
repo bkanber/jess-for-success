@@ -164,9 +164,10 @@ const styles = StyleSheet.create({
         color: '#aaa',
     },
     toggleRow: {
+        padding: 8,
+        backgroundColor: '#f5f5f5',
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 12,
         marginHorizontal: 8,
     },
     toggleLabel: {
