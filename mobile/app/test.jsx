@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { StyleSheet, Button, Image, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Text, View } from '@/components/Themed';
+import {useAuth} from "@/components/useAuth";
 
 export default function TestUploadScreen() {
+    const {fetch} = useAuth();
     const [image, setImage] = useState(null);
     const [result, setResult] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState(null);
 
-    const pickImageAndUpload = async () => {
+    const pickImageAndUpload = async (url) => {
         setError(null);
         setResult(null);
         // Pick image
@@ -26,12 +28,9 @@ export default function TestUploadScreen() {
         try {
             // Prepare form data
             const formData = new FormData();
-            formData.append('file', asset.file);
+            formData.append('image', asset.file);
             // Upload
-            const response = await fetch('http://localhost:7777/tagimage', {
-                method: 'POST',
-                body: formData,
-            });
+            const response = await fetch(url, { method: 'POST', body: formData });
             if (!response.ok) throw new Error('Upload failed');
             const data = await response.json();
             setResult(data);
@@ -44,7 +43,15 @@ export default function TestUploadScreen() {
 
     return (
         <View style={styles.container}>
-            <Button title="Select Image & Upload" onPress={pickImageAndUpload} disabled={uploading} />
+            <Button title="Tag Image"
+                    onPress={() => pickImageAndUpload('http://localhost:7777/api/images/tag')}
+                    disabled={uploading}
+                    style={{marginBottom: 16}}
+            />
+            <Button title="Segment Image"
+                    onPress={() => pickImageAndUpload('http://localhost:7777/api/images/segment')}
+                    disabled={uploading}
+            />
             {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
             {uploading && <ActivityIndicator style={{margin: 16}} />}
             {result && (
@@ -61,8 +68,8 @@ export default function TestUploadScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: 'space-between',
+        justifyContent: 'space-around',
         padding: 24,
     },
     imagePreview: {
