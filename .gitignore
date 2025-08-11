@@ -2,3 +2,5 @@
 node_modules/
 server/db.development.sqlite
 .env
+.gcp-credentials.json
+.gcp-token.json

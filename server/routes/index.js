@@ -4,6 +4,7 @@ import sharp from "sharp";
 import multer from 'multer';
 import {getPipeline, runTask} from '../helpers/pipelines.js';
 import apiRouter from './api.js';
+import googleRouter from './gcp.js';
 import {fetchTags} from '../helpers/autoImageTagger.js';
 
 const upload = multer({storage: multer.memoryStorage()});
@@ -22,6 +23,7 @@ const allowCors = (req, res, next) => {
 router.options('/*splat', allowCors);
 
 router.use('/api', allowCors, apiRouter);
+router.use('/gcp', allowCors, googleRouter);
 
 router.post('/tagimage', allowCors, upload.single("file"), async (req, res) => {
     const file = req.file;
