@@ -63,15 +63,11 @@ router.post('/', upload.single('image'), async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        const where = {};
+        const where = {
+            accountId: req.account.id
+        };
         if (req.query.closetId) {
-            // Only allow closets belonging to this account
-            const closet = await Closet.findOne({ where: { id: req.query.closetId, accountId: req.account.id } });
-            if (!closet) return res.status(403).json({ error: 'Forbidden' });
             where.closetId = req.query.closetId;
-        } else {
-            // Only hangers in closets belonging to this account
-            where.closetId = db.Sequelize.literal(`closetId IN (SELECT id FROM Closets WHERE accountId = ${req.account.id})`);
         }
         const hangers = await Hanger.findAll({ where });
         return res.json(hangers);
